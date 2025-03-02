@@ -1,101 +1,84 @@
-import Image from "next/image";
+"use client"
+
+import React ,{ useEffect, useState } from "react";
+import CandlestickChart from "./components/CandlestickChart";
+import VolumeChart from "./components/VolumeChart";
+import { GetCandles } from "./api/binanceApi";
+import CurrentCoinPrice from "./components/CurrentCoinPrice";
+import Button from "./components/Button";
+import ButtonList from "./components/ButtonList";
+import { LuChartCandlestick } from "react-icons/lu";
+import { TbChartHistogram } from "react-icons/tb";
+import ToggleTheme from "./components/ToggleTheme";
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [chart, setChart] = useState<boolean>(true)
+  const [active, setActive] = useState<string>('candle')
+  const [coinData, setCoinData]= useState<any>([])
+  const [interval, setInterval] = useState<string>('1m')
+  const [activeInterval, setActiveInterval] = useState<string>('1m')
+
+  const handleChart = (type: boolean, _active: string) => {
+    //kiem tra neu chart khong doi thi se khong setChart
+    if(type == chart) return
+    //set ten bieu do la bieu do dc chon de kiem tra va them class active
+    setActive(_active)
+    setChart(type)
+  }
+
+  useEffect(() => {
+    (async() => {
+      const apiData = await GetCandles('BTCUSDT',interval)
+      setCoinData(apiData)
+    })()
+  }, [interval])
+
+  const handleInterval = (_interval: string) => {
+    //kiem tra neu value giong voi interval thi se khong setInterval
+    if(_interval == interval) return
+    //
+    setActiveInterval(_interval)
+    setInterval(_interval)
+  }
+
+  if(!coinData && Object.keys(coinData).length == 0){
+    return (
+      <div>loading</div>
+    )
+  }
+  
+  return (
+    <div className="relative">
+        <ToggleTheme />
+        <div className="mb-3">
+          <CurrentCoinPrice />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="flex flex-col mb-2 md:flex-row md:justify-between">
+          <div className="mb-3">
+            <ButtonList>
+              <Button title={<LuChartCandlestick />} interval={null} onClick={() => handleChart(true,'candle')} type={'candle'} chart={active}/>
+              <Button title={<TbChartHistogram />} interval={null} onClick={() => handleChart(false,'volume')} type={'volume'} chart={active}/>
+            </ButtonList>
+          </div>
+
+          <div>
+            <ButtonList>
+              <Button title={'1m'} onClick={() => handleInterval('1m')} type={'1m'} interval={activeInterval} chart={null}/>
+              <Button title={'5m'} onClick={() => handleInterval('5m')} type={'5m'} interval={activeInterval} chart={null}/>
+              <Button title={'30m'} onClick={() => handleInterval('30m')} type={'30m'} interval={activeInterval} chart={null}/>
+              <Button title={'1h'} onClick={() => handleInterval('1h')} type={'1h'} interval={activeInterval} chart={null}/>
+              <Button title={'1d'} onClick={() => handleInterval('1d')} type={'1d'} interval={activeInterval} chart={null}/>
+              <Button title={'3d'} onClick={() => handleInterval('3d')} type={'3d'} interval={activeInterval} chart={null}/>
+            </ButtonList>
+          </div>
+        </div>
+
+        <div>
+          {chart ? <CandlestickChart data={coinData} interval={interval}/> : <VolumeChart data={coinData} interval={interval}/>}
+        </div>
     </div>
   );
 }

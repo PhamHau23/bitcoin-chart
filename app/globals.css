@@ -19,3 +19,31 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.tooltip{
+  width: 140px; 
+  height: fit-content; 
+  position: absolute; 
+  display: none; 
+  padding: 5px; 
+  box-sizing: border-box; 
+  font-size: 12px; 
+  text-align: left; 
+  z-index: 1000; 
+  top: 12px; 
+  left: 12px;
+  pointer-events: none; 
+  border: 1px solid; 
+  border-radius: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; 
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+
+button.svgStyle > svg{
+  width: 24px;
+  height: 24px;
+}
+
+.active{
+  background-color: #FFFFFF;
+}
