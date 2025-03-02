@@ -102,7 +102,7 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
                 ) {
                     toolTip.style.display = 'none';
                 } else {
-                    const date= convertUnixTime(param.time)
+                    const date= convertUnixTime(param.time as number)
                     toolTip.style.display = 'block'
                     const data = param.seriesData.get(candleStickChartSeries)
                     let price
@@ -173,7 +173,7 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
                 chart.remove();
             };
         }
-    }, [candlestickChartData, theme])
+    }, [candlestickChartData, theme, interval])
 
     return(
         <div ref={containerRef} className="h-[500px]" style={{position: 'relative'}}>

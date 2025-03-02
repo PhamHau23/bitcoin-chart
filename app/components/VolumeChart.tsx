@@ -84,7 +84,7 @@ const VolumeChart = ({data, interval}: Props) => {
                 ) {
                     toolTip.style.display = 'none';
                 } else {
-                    const date = convertUnixTime(param.time)
+                    const date = convertUnixTime(param.time as number)
                     toolTip.style.display = 'block'
                     const data = param.seriesData.get(volumechartSeries)
                     let volume
@@ -150,7 +150,7 @@ const VolumeChart = ({data, interval}: Props) => {
                 chart.remove()
             }
         }
-    }, [volumechartData, theme])
+    }, [volumechartData, theme, interval])
 
     return(
         <div ref={containerRef} style={{position: 'relative'}} className="h-[500px]">
