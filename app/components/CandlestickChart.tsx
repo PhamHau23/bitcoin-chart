@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
-import { createChart, CandlestickSeries, Time } from "lightweight-charts"
+import { createChart, CandlestickSeries, Time, MouseEventParams } from "lightweight-charts"
 import convertUnixTime from "../lib/convertUnixTime"
 import { GetLiveCandle, ICandleStick } from "../api/binanceApi"
 import { useThemeContext } from "../context/toggleTheme"
@@ -11,16 +11,32 @@ interface Props {
     interval: string
 }
 
+interface dataType{
+    openTime: number,
+    open: number,
+    high: number,
+    low: number,
+    close: number
+}
+
+interface candlestickChartDataType{
+    time: Time,
+    open: number,
+    high: number,
+    low: number,
+    close: number
+}
+
 
 const CandlestickChart: React.FC<Props> = ({data, interval}) => {
     const containerRef = useRef<HTMLDivElement | null>(null)
-    const [candlestickChartData, setCandlestickChartData] = useState<any>([])
+    const [candlestickChartData, setCandlestickChartData] = useState<candlestickChartDataType[]>([])
     const {theme} = useThemeContext()
 
     useEffect(() => {
-        const _data = data.map((item: number | any) => (
+        const _data = data.map((item: dataType) => (
             {
-                time: item.openTime,
+                time: item.openTime as Time,
                 open: item.open,
                 high: item.high,
                 low: item.low,
@@ -77,7 +93,7 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
             toolTip.style.borderColor = '#2962FF';
             containerRef.current.appendChild(toolTip);
             
-            chart.subscribeCrosshairMove((param: any) => {
+            chart.subscribeCrosshairMove((param: MouseEventParams) => {
                 if (
                     param.point === undefined ||
                     !param.time ||
@@ -89,7 +105,14 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
                     const date= convertUnixTime(param.time)
                     toolTip.style.display = 'block'
                     const data = param.seriesData.get(candleStickChartSeries)
-                    const price = data.value !== undefined ? data.value : data.close
+                    let price
+                    if(data){
+                        if('value' in data){
+                            price = data.value
+                        }else if('close' in data){
+                            price = data.close
+                        }
+                    }
                     toolTip.innerHTML = `
                     <p class="font-bold">${date}</p>
                     <p class="font-bold text-red-600">

@@ -1,10 +1,10 @@
 "use client"
 
-import { CookieValueTypes, getCookie, setCookie } from "cookies-next"
+import { getCookie, setCookie } from "cookies-next"
 import React, { createContext, useContext, useEffect, useState } from "react"
 
 interface ThemeType{
-    theme: string,
+    theme: string | undefined,
     toggleTheme: () => void
 }
 
@@ -12,10 +12,11 @@ interface Props{
     children: React.ReactNode
 }
 
-const ToggleThemeContext = createContext<any | ThemeType>(null)
+const dfTheme: ThemeType = {theme: 'light', toggleTheme: () => []}
+const ToggleThemeContext = createContext<ThemeType>(dfTheme)
 
 const ToggleThemeProvider = ({children}: Props) => {
-    const [theme, setTheme] = useState<string | null>(null)
+    const [theme, setTheme] = useState<string>()
 
     useEffect(() => {
         const cookieTheme = getCookie("theme");

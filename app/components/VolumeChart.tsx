@@ -9,15 +9,20 @@ interface Props{
     interval: string
 }
 
+interface volumechartDataType{
+    time: Time,
+    value: number
+}
+
 const VolumeChart = ({data, interval}: Props) => {
     const containerRef = useRef<HTMLDivElement | null>(null)
-    const [volumechartData, setVolumechartData] = useState<any>([])
+    const [volumechartData, setVolumechartData] = useState<volumechartDataType[]>([])
     const {theme} = useThemeContext()
 
     useEffect(() => {
         const _data = data.map((item: {openTime: number, volume: number}) => (
             {
-                time: item.openTime,
+                time: item.openTime as Time,
                 value: item.volume
             }
         ))
