@@ -32,7 +32,7 @@ export const GetCandles = async (
       `https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${currentTimeFrame}&limit=1000`
     );
 
-    return response.data.map((item: any) => ({
+    return response.data.map((item: [number, string, string, string, string, string, number, string, number, string, string, string]) => ({
       openTime: Math.floor(item[0] / 1000),
       open: parseFloat(item[1]),
       high: parseFloat(item[2]),

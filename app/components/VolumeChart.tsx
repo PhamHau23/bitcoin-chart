@@ -1,11 +1,11 @@
-import { createChart, HistogramSeries } from "lightweight-charts"
+import { createChart, HistogramSeries, MouseEventParams, Time } from "lightweight-charts"
 import { useEffect, useRef, useState } from "react"
 import convertUnixTime from "../lib/convertUnixTime"
-import { GetLiveCandle } from "../api/binanceApi"
+import { GetLiveCandle, ICandleStick } from "../api/binanceApi"
 import { useThemeContext } from "../context/toggleTheme"
 
 interface Props{
-    data: [],
+    data: ICandleStick[],
     interval: string
 }
 
@@ -15,7 +15,7 @@ const VolumeChart = ({data, interval}: Props) => {
     const {theme} = useThemeContext()
 
     useEffect(() => {
-        const _data = data.map((item: any) => (
+        const _data = data.map((item: {openTime: number, volume: number}) => (
             {
                 time: item.openTime,
                 value: item.volume
@@ -70,7 +70,7 @@ const VolumeChart = ({data, interval}: Props) => {
             toolTip.style.borderColor = '#2962FF';
             containerRef.current.appendChild(toolTip);
             
-            chart.subscribeCrosshairMove((param: any) => {
+            chart.subscribeCrosshairMove((param: MouseEventParams) => {
                 if (
                     param.point === undefined ||
                     !param.time ||
@@ -82,7 +82,16 @@ const VolumeChart = ({data, interval}: Props) => {
                     const date = convertUnixTime(param.time)
                     toolTip.style.display = 'block'
                     const data = param.seriesData.get(volumechartSeries)
-                    const volume = data.value !== undefined ? data.value : data.close
+                    let volume
+
+                    //kiem tra data, value, close va gan gia tri cho volume
+                    if(data){
+                        if('value' in data){
+                            volume = data.value
+                        }else if('close' in data){
+                            volume = data.close
+                        }
+                    }
                     toolTip.innerHTML = `
                     <p class="font-bold">${date}</p>
                     <p class="font-bold text-red-600">
@@ -113,8 +122,8 @@ const VolumeChart = ({data, interval}: Props) => {
                     const message = JSON.parse(event.data);
                     if (message.e === 'kline') {
                         const newData = message.k;
-                        const volumeNewData: any = {
-                            time: Math.floor(newData.t / 1000),
+                        const volumeNewData: {time: Time, value: number} = {
+                            time: Math.floor(newData.t / 1000) as Time,
                             value: parseFloat(newData.v)
                         };
         

@@ -23,7 +23,7 @@ const CurrentCoinPrice: React.FC = () => {
                 const message = JSON.parse(event.data);
                 if (message.e === 'kline') {
                     const kline = message.k;
-                    const value: any = {
+                    const value: {open: number, close: number} = {
                         open: parseFloat(kline.o),
                         close: parseFloat(kline.c)
                     };

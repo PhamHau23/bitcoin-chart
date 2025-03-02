@@ -5,7 +5,7 @@ import { useThemeContext } from "../context/toggleTheme"
 
 interface Props{
     title: React.ReactElement | string,
-    onClick: any,
+    onClick: () => void,
     chart: string | null,
     type: string | null,
     interval: string | null

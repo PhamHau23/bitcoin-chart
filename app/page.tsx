@@ -3,7 +3,7 @@
 import React ,{ useEffect, useState } from "react";
 import CandlestickChart from "./components/CandlestickChart";
 import VolumeChart from "./components/VolumeChart";
-import { GetCandles } from "./api/binanceApi";
+import { GetCandles, ICandleStick } from "./api/binanceApi";
 import CurrentCoinPrice from "./components/CurrentCoinPrice";
 import Button from "./components/Button";
 import ButtonList from "./components/ButtonList";
@@ -16,7 +16,7 @@ export default function Home() {
 
   const [chart, setChart] = useState<boolean>(true)
   const [active, setActive] = useState<string>('candle')
-  const [coinData, setCoinData]= useState<any>([])
+  const [coinData, setCoinData]= useState<ICandleStick[]>([])
   const [interval, setInterval] = useState<string>('1m')
   const [activeInterval, setActiveInterval] = useState<string>('1m')
 

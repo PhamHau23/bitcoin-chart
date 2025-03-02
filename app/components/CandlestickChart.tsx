@@ -1,13 +1,13 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
-import { createChart, CandlestickSeries } from "lightweight-charts"
+import { createChart, CandlestickSeries, Time } from "lightweight-charts"
 import convertUnixTime from "../lib/convertUnixTime"
-import { GetLiveCandle } from "../api/binanceApi"
+import { GetLiveCandle, ICandleStick } from "../api/binanceApi"
 import { useThemeContext } from "../context/toggleTheme"
 
 interface Props {
-    data: [],
+    data: ICandleStick[],
     interval: string
 }
 
@@ -18,7 +18,7 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
     const {theme} = useThemeContext()
 
     useEffect(() => {
-        const _data = data.map((item: any) => (
+        const _data = data.map((item: number | any) => (
             {
                 time: item.openTime,
                 open: item.open,
@@ -97,9 +97,9 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
                     </p>
                     `
             
-                    // Position tooltip according to mouse cursor position
+                    //vi tri tooltip
                     toolTip.style.left = param.point.x + 'px'
-                    toolTip.style.top = param.point.y + 'px'
+                    toolTip.style.top = param.point.y + 10 + 'px'
                 }
             })
 
@@ -119,8 +119,14 @@ const CandlestickChart: React.FC<Props> = ({data, interval}) => {
                     const message = JSON.parse(event.data);
                     if (message.e === 'kline') {
                         const newData = message.k;
-                        const candlestick: any = {
-                            time: Math.floor(newData.t / 1000),
+                        const candlestick: {
+                            time: Time,
+                            open: number,
+                            high: number,
+                            low: number,
+                            close: number
+                        } = {
+                            time: Math.floor(newData.t / 1000) as Time,
                             open: parseFloat(newData.o),
                             high: parseFloat(newData.h),
                             low: parseFloat(newData.l),
